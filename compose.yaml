@@ -1,0 +1,67 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: dockerfile
+    container_name: frontend
+    ports:
+      - 80:80
+    depends_on:
+      - auth-service
+      - ticket-service
+
+  database:
+    image: postgres:latest
+    container_name: database
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=movies_db
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    # ports:
+    #   - 4500:5432
+    networks:
+      - app_network
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: dockerfile.auth
+    container_name: auth-service
+    ports:
+      - 5000:5000
+    environment:
+      - ConnectionStrings__PostgresConnection=Host=database;Port=5432;Database=movies_db;Username=postgres;Password=admin
+      - Logging__LogLevel__Default=Information
+      - Logging__LogLevel__Microsoft=Warning
+      - ASPNETCORE_URLS=http://+:5000
+    depends_on:
+      - database
+    networks:
+      - app_network
+
+  ticket-service:
+    build:
+      context: .
+      dockerfile: dockerfile.ticket
+    container_name: ticket-service
+    ports:
+      - 5001:5000
+    environment:
+      - ConnectionStrings__PostgresConnection=Host=database;Port=5432;Database=movies_db;Username=postgres;Password=admin
+      - Logging__LogLevel__Default=Information
+      - Logging__LogLevel__Microsoft=Warning
+      - ASPNETCORE_URLS=http://+:5000
+    depends_on:
+      - database
+    networks:
+      - app_network
+
+volumes:
+  db_data:
+
+networks:
+  app_network:
+    driver: bridge
+

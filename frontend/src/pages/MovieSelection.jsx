@@ -38,7 +38,7 @@ function MovieSelection() {
         Chọn suất chiếu
       </Button>
       <Row gutter={[24, 24]}>
-        {movies.map(movie => (
+        {movies?.map?.(movie => (
           <Col xs={24} md={8} key={movie?.maPhim}>
             <Card hoverable className={`h-full transition-all duration-300 ${selectedMovie?.maPhim === movie?.maPhim ? 'ring-2 ring-red-500 shadow-xl' : 'hover:shadow-lg'}`}
               onClick={() => dispatch({ type: "updateSelectedMovie", payload: movie })}>

@@ -63,7 +63,7 @@ export const reducer = (state, action) => {
       _state.selectedSeats = []
       break;
     case "updateMovieList":
-      _state.movies = action.payload
+      _state.movies = action.payload ?? []
       break;
     case "updateSelectedMovie":
       _state.selectedMovie = action.payload
